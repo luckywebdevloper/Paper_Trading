@@ -1,4 +1,4 @@
 import Colors from "./Colors";
 import Images from "./Images";
-import Genaral from "./General";
-export { Colors, Images, Genaral };
+import General from "./General";
+export { Colors, Images, General };

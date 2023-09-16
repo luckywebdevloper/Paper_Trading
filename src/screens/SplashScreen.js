@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, StatusBar, Image } from "react-native";
 import React from "react";
-import { Colors, Images } from "../contants/Index";
+import { Colors, Images } from "../contants";
 export default function SplashScreen() {
   return (
     <View style={styles.container}>
