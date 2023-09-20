@@ -11,17 +11,18 @@ import {
   TabView,
   Button,
 } from "@ui-kitten/components";
+import { Register } from "../components";
 
 export default function LoginScreen({ navigation }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
   const shouldLoadComponent = (index): boolean => index === selectedIndex;
   return (
     <View className=" h-full w-full bg-black flex  ">
       <StatusBar style=" light" />
-      <View className=" h-2/6 mt-11 p-4">
+      <View className=" h-1/4 mt-11 p-4">
         <Text className=" text-4xl leading-loose my-2  text-white  font-bold">
           Hi, Welcome to the Stockology
         </Text>
@@ -73,7 +74,7 @@ export default function LoginScreen({ navigation }) {
           </Tab>
           <Tab title="Register">
             <Layout style={styles.tabContainer}>
-              <Text category="h5">register</Text>
+              <Register navigation={navigation} />
             </Layout>
           </Tab>
         </TabView>
@@ -83,9 +84,9 @@ export default function LoginScreen({ navigation }) {
 }
 const styles = StyleSheet.create({
   tabContainer: {
-    height: "80%",
+    height: "85%",
     display: "flex",
-    gap: 30,
+    gap: 10,
     alignItems: "center",
     justifyContent: "center",
   },

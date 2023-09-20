@@ -1,3 +1,4 @@
 import SplashScreen from "./SplashScreen";
 import WelcomeScreen from "./WelcomeScreen";
-export { SplashScreen, WelcomeScreen };
+import Market from "./Market";
+export { SplashScreen, WelcomeScreen, Market };
