@@ -1,28 +1,41 @@
-import { View, Text, StyleSheet } from "react-native";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchStockData } from "../../redux/slice/stockDataSlice";
+import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
+import React, { useState } from "react";
+import axios from "axios";
 import { useEffect } from "react";
 export default function MarketList() {
-  const dispatch = useDispatch();
-  const stockData = useSelector((state) => state.stockData.data);
+  const [stockName, setStockName] = useState([]);
 
   useEffect(() => {
-    // Fetch stock data when the component mounts
-    dispatch(fetchStockData());
-  }, [dispatch]);
+    fetchStockName();
+  }, []);
+  const fetchStockName = async () => {
+    try {
+      const response = await axios.get(
+        "https://stock-data-251j.onrender.com/api/allSymbols"
+      );
+      setData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const renderItem = ({ item }) => (
+    <View style={styles.IndexBox} key={item}>
+      <Text style={styles.name} key={item}>
+        {item}
+      </Text>
+    </View>
+  );
 
   return (
-    <View style={styles.IndexBox}>
-      {Array.isArray(stockData) &&
-        stockData.map((dataItem, index) => (
-          <View key={index}>
-            <Text style={styles.IndexText}>{dataItem.index}</Text>
-            <Text style={styles.IndexText2}>High: {dataItem.high}</Text>
-            <Text style={styles.IndexText2}>Low: {dataItem.low}</Text>
-            {/* Add more data fields as needed */}
-          </View>
-        ))}
+    <View style={styles.container}>
+      <ScrollView style={styles.main}>
+        <FlatList
+          data={stockName}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.symbol}
+          scrollEnabled={true}
+        />
+      </ScrollView>
     </View>
   );
 }
@@ -32,6 +45,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginHorizontal: 15,
     gap: 15,
+
     borderColor: "#CCCED0",
     borderStyle: "solid",
     borderWidth: 1,

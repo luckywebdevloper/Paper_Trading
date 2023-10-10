@@ -6,20 +6,41 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Colors, General } from "../contants";
 import { Separator, WelcomeCard } from "../components";
 import { display } from "../utils";
 
-const Pagination = () => {
+const pageStyle = (isActive) =>
+  isActive
+    ? styles.page
+    : { ...styles.page, backgroundColor: Colors.Default_GREY };
+const Pagination = ({ index }) => {
   return (
     <View style={styles.pageContainer}>
-      <View style={styles.page}></View>
-      <View style={styles.page}></View>
+      {[...Array(General.WELCOME_CONTENTS.length).keys()].map((_, i) =>
+        i === index ? (
+          <View style={pageStyle(true)} key={i} />
+        ) : (
+          <View style={pageStyle(false)} key={i} />
+        )
+      )}
     </View>
   );
 };
-export default function WelcomeScreen() {
+export default function WelcomeScreen({ navigation }) {
+  const [welcomeListIndex, setWelcomeListIndex] = useState(0);
+  const welcomeList = useRef();
+  const pageScroll = () => {
+    welcomeList.current.scrollToIndex({
+      index: welcomeListIndex < 1 ? welcomeListIndex + 1 : welcomeListIndex,
+    });
+  };
+
+  const onViewRef = useRef(({ changed }) => {
+    setWelcomeListIndex(changed[0].index);
+  });
+  const viewConfiRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
   return (
     <View style={styles.container}>
       <StatusBar
@@ -31,26 +52,39 @@ export default function WelcomeScreen() {
       <Separator height={display.setHeight(8)} />
       <View style={styles.welcomeListContiner}>
         <FlatList
+          ref={welcomeList}
           data={General.WELCOME_CONTENTS}
           keyExtractor={(item) => item.title}
           horizontal
           showsHorizontalScrollIndicator={false}
           pagingEnabled
+          viewabilityConfig={viewConfiRef.current}
+          onViewableItemsChanged={onViewRef.current}
           overScrollMode="never"
           renderItem={({ item }) => <WelcomeCard {...item} />}
         />
       </View>
       <Separator height={display.setHeight(8)} />
-      <Pagination />
+      <Pagination index={welcomeListIndex} />
       <Separator height={display.setHeight(8)} />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity>
-          <Text style={styles.buttonText}>SKIP</Text>
+      {welcomeListIndex === 1 ? (
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Signin")}
+          activeOpacity={0.8}
+          style={styles.getStartedButton}
+        >
+          <Text style={styles.getStartedText}>Get Started</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
+      ) : (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={() => welcomeList.current.scrollToEnd()}>
+            <Text style={styles.buttonText}>SKIP</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => pageScroll()} style={styles.button}>
+            <Text style={styles.buttonText}>Next</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -83,5 +117,24 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
+  },
+  button: {
+    fontSize: 16,
+    backgroundColor: Colors.Default_GREEN,
+    paddingVertical: 11,
+    paddingHorizontal: 11,
+    borderRadius: 32,
+  },
+  getStartedButton: {
+    backgroundColor: Colors.Default_GREEN,
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    marginHorizontal: 10,
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  getStartedText: {
+    fontSize: 20,
+    color: Colors.Default_WHITE,
   },
 });
