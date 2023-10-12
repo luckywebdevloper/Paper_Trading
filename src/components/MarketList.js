@@ -1,40 +1,57 @@
 import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
+import { StaticImageService } from "../services";
 import { useEffect } from "react";
+import { NseIndia } from "stock-nse-india";
+const nseIndia = new NseIndia();
 export default function MarketList() {
-  const [stockName, setStockName] = useState([]);
+  const [stockNames, setStockNames] = useState([]);
+  const [stockDetails, setStockDetails] = useState([]);
+  // const percentage = (stockDetail.priceInfo.pChange * 1).toFixed(3);
+  const data = "SBIN";
 
   useEffect(() => {
-    fetchStockName();
+    nseIndia.getAllStockSymbols().then((symbols) => {
+      setStockNames(symbols);
+    });
   }, []);
-  const fetchStockName = async () => {
-    try {
-      const response = await axios.get(
-        "https://stock-data-251j.onrender.com/api/allSymbols"
-      );
-      setData(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const renderItem = ({ item }) => (
-    <View style={styles.IndexBox} key={item}>
-      <Text style={styles.name} key={item}>
-        {item}
-      </Text>
-    </View>
-  );
+  useEffect(() => {
+    stockNames.forEach((stockName) => {
+      nseIndia.getEquityDetails(stockName).then((details) => {
+        if (details) {
+          setStockDetails((prevStockDetails) => [...prevStockDetails, details]);
+          // console.log(data === stockDetails.info.identifier);
+          // console.log(details.priceInfo.pChange);
+        }
+      });
+    });
+  }, [stockNames]);
+  // Fetch Stock Name
+
+  // Fetch Stock Detail
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.main}>
-        <FlatList
-          data={stockName}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.symbol}
-          scrollEnabled={true}
-        />
+        <View>
+          {stockDetails.map((StockDetail) => (
+            <View
+              style={styles.IndexBox}
+              key={StockDetail.info.symbol + `${Math.random(Number)}`}
+            >
+              <Text
+                style={styles.IndexText}
+                key={StockDetail.info.symbol + `${Math.random(Number)}`}
+                onPress={() => console.log(StockDetail.info.companyName)}
+              >
+                {StockDetail.info.symbol}
+              </Text>
+              <Text>{StockDetail.priceInfo.lastPrice}</Text>
+              <Text>{StockDetail.priceInfo.pChange}</Text>
+            </View>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );
@@ -45,12 +62,18 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginHorizontal: 15,
     gap: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
 
     borderColor: "#CCCED0",
     borderStyle: "solid",
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 14,
+  },
+  name: {
+    width: 100,
   },
   IndexText: {
     fontSize: 17,

@@ -1,5 +1,8 @@
 import { ApiContants } from "../contants";
 
+const getStockInfo = (symbole) =>
+  `${ApiContants.AllSTOCKINFO.BASE_URL}/${symbole}`;
+
 const getFlagIcon = (
   code = "IN",
   style = ApiContants.COUNTRY_FLAG.STYLE.FLAT,
@@ -19,4 +22,10 @@ const getGalleryImage = (
 ) =>
   `${ApiContants.STATIC_IMAGE.BASE_URL}/gallery/${size}/${quality}/${imageId}.png`;
 
-export default { getFlagIcon, getLogo, getPoster, getGalleryImage };
+export default {
+  getFlagIcon,
+  getLogo,
+  getPoster,
+  getGalleryImage,
+  getStockInfo,
+};
